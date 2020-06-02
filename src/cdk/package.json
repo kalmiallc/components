@@ -39,7 +39,8 @@
     "migrations": "./schematics/migration.json"
   },
   "sideEffects": false,
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
-  }
+  "publishConfig": {
+    "registry": "https://npm.kalmia.si"
+  },
+  "private": true
 }
