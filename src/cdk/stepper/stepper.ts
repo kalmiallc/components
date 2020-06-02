@@ -70,6 +70,9 @@ export class StepperSelectionEvent {
 
   /** The step instance previously selected. */
   previouslySelectedStep: CdkStep;
+
+  /** True if user attempted to switch to an invalid step and this change was prevented. */
+  preventedMoveToInvalidStep: boolean;
 }
 
 /** The state of each step. */
@@ -302,9 +305,23 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
         throw Error('cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.');
       }
 
-      if (this._selectedIndex != newIndex && !this._anyControlsInvalidOrPending(newIndex) &&
-          (newIndex >= this._selectedIndex || this.steps.toArray()[newIndex].editable)) {
-        this._updateSelectedItemIndex(index);
+      if (!this._anyControlsInvalidOrPending(newIndex)) {
+        if (newIndex >= this._selectedIndex || this.steps.toArray()[newIndex].editable) {
+          this._updateSelectedItemIndex(index);
+        }
+      } else {
+        // There is a pending or invalid control, find the first valid step we can move to
+        let lastValidIndex = 0;
+        for (let i = 0; i <= newIndex; i++) {
+          if (this._anyControlsInvalidOrPending(i)) {
+            break;
+          }
+          lastValidIndex = i;
+        }
+
+        // tslint:disable-next-line:max-line-length
+        // Update index and dispatch event with a flag indicating we failed to move to an invalid step
+        this._updateSelectedItemIndex(lastValidIndex, true);
       }
     } else {
       this._selectedIndex = newIndex;
@@ -451,13 +468,14 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
     return this._keyManager ? this._keyManager.activeItemIndex : this._selectedIndex;
   }
 
-  private _updateSelectedItemIndex(newIndex: number): void {
+  private _updateSelectedItemIndex(newIndex: number, preventedChange = false): void {
     const stepsArray = this.steps.toArray();
     this.selectionChange.emit({
       selectedIndex: newIndex,
       previouslySelectedIndex: this._selectedIndex,
       selectedStep: stepsArray[newIndex],
       previouslySelectedStep: stepsArray[this._selectedIndex],
+      preventedMoveToInvalidStep: preventedChange
     });
 
     // If focus is inside the stepper, move it to the next header, otherwise it may become
