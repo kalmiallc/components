@@ -24,9 +24,21 @@ export const matStepperAnimations: {
 } = {
   /** Animation that transitions the step along the X axis in a horizontal stepper. */
   horizontalStepTransition: trigger('stepTransition', [
-    state('previous', style({transform: 'translate3d(-100%, 0, 0)', visibility: 'hidden'})),
-    state('current', style({transform: 'none', visibility: 'visible'})),
-    state('next', style({transform: 'translate3d(100%, 0, 0)', visibility: 'hidden'})),
+    state('previous', style({
+      opacity   : 0,
+      transform : 'translateX(-20px)',
+      visibility: 'hidden'
+    })),
+    state('current', style({
+      opacity   : 1,
+      transform : 'none',
+      visibility: 'visible'
+    })),
+    state('next', style({
+      opacity   : 0,
+      transform : 'translateX(20px)',
+      visibility: 'hidden'
+    })),
     transition('* => *', animate('500ms cubic-bezier(0.35, 0, 0.25, 1)'))
   ]),
 
