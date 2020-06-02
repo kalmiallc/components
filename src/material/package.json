@@ -45,7 +45,6 @@
   "sideEffects": false,
   "publishConfig": {
     "registry": "https://npm.kalmia.si"
-  },
-  "private": true
+  }
 }
 
