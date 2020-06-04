@@ -103,7 +103,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   private _previousElevation: string;
 
   /** All items inside the menu. Includes items nested inside another menu. */
-  @ContentChildren(MatMenuItem, {descendants: true}) _allItems: QueryList<MatMenuItem>;
+  _allItems: QueryList<MatMenuItem> = new QueryList<MatMenuItem>();
 
   /** Only the direct descendant menu items. */
   private _directDescendantItems = new QueryList<MatMenuItem>();
@@ -292,7 +292,10 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @deprecated No longer being used. To be removed.
    * @breaking-change 9.0.0
    */
-  addItem(_item: MatMenuItem) {}
+  addItem(_item: MatMenuItem) {
+    this._allItems.reset([ ... this._allItems.toArray(), _item]);
+    this._allItems.notifyOnChanges();
+  }
 
   /**
    * Removes an item from the menu.
@@ -300,7 +303,10 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @deprecated No longer being used. To be removed.
    * @breaking-change 9.0.0
    */
-  removeItem(_item: MatMenuItem) {}
+  removeItem(_item: MatMenuItem) {
+    this._allItems.reset([ ... this._allItems.toArray().filter(x => x !== _item)]);
+    this._allItems.notifyOnChanges();
+  }
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */
   _handleKeydown(event: KeyboardEvent) {
